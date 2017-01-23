@@ -1,0 +1,31 @@
+#!/bin/bash
+
+cd images
+
+series_max=9
+pic_max=999
+
+for series in `seq 1 $series_max`; do
+	errors=0
+	for pic in `seq 1 $pic_max`; do
+		prefix=""
+		if [ $pic -lt 10 ]; then
+			prefix="00"
+		elif [ $pic -lt 100 ]; then
+			prefix="0"
+		fi
+		filename="tcg-series${series}-${prefix}${pic}-full.jpg"
+		if [ -e $filename ]; then
+			continue
+		fi
+		wget http://media.blizzard.com/wow/media/artwork/trading-card-game/series${series}/${filename}
+		if [ $? -gt 0 ]; then
+			let errors=errors+1
+			if [ $errors -gt 10 ]; then
+				break
+			fi
+		else
+			let errors=0
+		fi
+	done
+done
